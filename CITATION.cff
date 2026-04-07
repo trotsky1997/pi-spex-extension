@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+title: pi-spex-extension
+message: >-
+  If you use pi-spex-extension in research, teaching materials, or public
+  technical writing, please cite it using the metadata below.
+version: 0.1.0
+authors:
+  - family-names: Zhang
+    given-names: Di
+repository-code: https://github.com/trotsky1997/pi-spex-extension
+url: https://github.com/trotsky1997/pi-spex-extension
+license: MIT
+abstract: >-
+  A Pi package that brings Spec Kit and spex-inspired workflows into Pi,
+  including bootstrap, trait management, review helpers, a stateful ship
+  pipeline, and an interactive spec-driven development consultant skill.
+keywords:
+  - pi
+  - spec-driven-development
+  - spec-kit
+  - spex
+  - coding-agent

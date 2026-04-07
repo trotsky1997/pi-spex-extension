@@ -47,6 +47,9 @@
     ],
     "skills": [
       "./skills"
-    ]
-  }
+    ],
+    "image": "./media/pi-spex-consultant.svg"
+  },
+  "license": "MIT",
+  "author": "Di Zhang"
 }
