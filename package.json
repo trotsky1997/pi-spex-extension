@@ -1,0 +1,52 @@
+{
+  "name": "pi-spex-extension",
+  "version": "0.1.0",
+  "description": "Spec Kit + spex-inspired workflow extension for Pi.",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/trotsky1997/pi-spex-extension.git"
+  },
+  "homepage": "https://github.com/trotsky1997/pi-spex-extension",
+  "bugs": {
+    "url": "https://github.com/trotsky1997/pi-spex-extension/issues"
+  },
+  "keywords": [
+    "pi-package"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "smoke": "bash ./tests/smoke-install.sh",
+    "ship-state-smoke": "tsx ./tests/ship-state-smoke.ts",
+    "ship-resume-smoke": "tsx ./tests/ship-resume-smoke.ts",
+    "e2e-pi-smoke": "tsx ./tests/e2e-pi-smoke.ts",
+    "skill-smoke": "tsx ./tests/skill-smoke.ts"
+  },
+  "dependencies": {
+    "pi-claude-code-ask-user": "git+https://github.com/trotsky1997/pi-claude-code-ask-user.git"
+  },
+  "bundledDependencies": [
+    "pi-claude-code-ask-user"
+  ],
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*",
+    "@sinclair/typebox": "*"
+  },
+  "devDependencies": {
+    "@mariozechner/pi-coding-agent": "*",
+    "@sinclair/typebox": "*",
+    "@types/node": "^22.10.2",
+    "typescript": "^5.6.3",
+    "tsx": "^4.19.2",
+    "@mariozechner/pi-ai": "*"
+  },
+  "pi": {
+    "extensions": [
+      "./extensions/spex",
+      "./node_modules/pi-claude-code-ask-user/extensions/claude-code-ask-user"
+    ],
+    "skills": [
+      "./skills"
+    ]
+  }
+}
