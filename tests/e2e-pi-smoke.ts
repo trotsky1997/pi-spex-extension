@@ -13,6 +13,7 @@ import { createShipState, failShipState, pauseShipState } from "../extensions/sp
 
 const execFile = promisify(execFileCb);
 const ROOT_DIR = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const ASK_USER_DIR = resolve(ROOT_DIR, "..", "pi-claude-code-ask-user");
 const SPEC_KIT_DIR = resolve(ROOT_DIR, "..", "spec-kit");
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -170,6 +171,7 @@ async function main(): Promise<void> {
     await execFile("git", ["init"], { cwd: repo });
     await writeFile(join(repo, "README.md"), "# pi spex e2e smoke\n", "utf8");
     await execFile("pi", ["install", "-l", ROOT_DIR], { cwd: repo });
+    await execFile("pi", ["install", "-l", ASK_USER_DIR], { cwd: repo });
 
     faux.setResponses(buildInitResponses());
     const model = faux.getModel();

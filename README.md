@@ -71,12 +71,14 @@ Install into the current project:
 
 ```bash
 pi install -l git:github.com/trotsky1997/pi-spex-extension@v0.1.0
+pi install -l git:github.com/trotsky1997/pi-claude-code-ask-user
 ```
 
 Install globally:
 
 ```bash
 pi install git:github.com/trotsky1997/pi-spex-extension@v0.1.0
+pi install git:github.com/trotsky1997/pi-claude-code-ask-user
 ```
 
 Track the latest main branch instead of a tag:
@@ -89,6 +91,7 @@ pi install -l git:github.com/trotsky1997/pi-spex-extension@main
 
 ```bash
 pi install -l /home/aka/pi-playground/pi-spex-extension
+pi install -l /home/aka/pi-playground/pi-claude-code-ask-user
 ```
 
 Quick-load without installing:
@@ -112,7 +115,7 @@ pi -e /home/aka/pi-playground/pi-spex-extension/extensions/spex/index.ts \
    -e /home/aka/pi-playground/pi-claude-todo-v2/extensions/claude-todo-v2/index.ts
 ```
 
-For local path usage, run `npm install` once inside the package so the bundled `pi-claude-code-ask-user` dependency is available under `node_modules/`.
+`pi-spex-extension` does not auto-bundle `AskUserQuestion`. Install `pi-claude-code-ask-user` alongside it when you want interactive `/spex-init`, `/spex-traits interactive`, or consultant flows that ask structured questions.
 
 ## Prerequisite
 
@@ -123,6 +126,8 @@ uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 ```
 
 `/spex-init` reuses the existing `AskUserQuestion` tool from `pi-claude-code-ask-user` for interactive trait and permission selection.
+
+If you already installed `pi-claude-code-ask-user` separately, that is the correct setup. `pi-spex-extension` no longer tries to register a second bundled copy, so the `AskUserQuestion` tool will not conflict.
 
 ## Typical flow
 

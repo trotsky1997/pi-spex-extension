@@ -22,12 +22,6 @@
     "e2e-pi-smoke": "tsx ./tests/e2e-pi-smoke.ts",
     "skill-smoke": "tsx ./tests/skill-smoke.ts"
   },
-  "dependencies": {
-    "pi-claude-code-ask-user": "https://codeload.github.com/trotsky1997/pi-claude-code-ask-user/tar.gz/refs/heads/main"
-  },
-  "bundledDependencies": [
-    "pi-claude-code-ask-user"
-  ],
   "peerDependencies": {
     "@mariozechner/pi-coding-agent": "*",
     "@sinclair/typebox": "*"
@@ -42,8 +36,7 @@
   },
   "pi": {
     "extensions": [
-      "./extensions/spex",
-      "./node_modules/pi-claude-code-ask-user/extensions/claude-code-ask-user"
+      "./extensions/spex"
     ],
     "skills": [
       "./skills"
