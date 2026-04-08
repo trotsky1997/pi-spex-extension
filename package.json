@@ -23,7 +23,7 @@
     "skill-smoke": "tsx ./tests/skill-smoke.ts"
   },
   "dependencies": {
-    "pi-claude-code-ask-user": "git+https://github.com/trotsky1997/pi-claude-code-ask-user.git"
+    "pi-claude-code-ask-user": "https://codeload.github.com/trotsky1997/pi-claude-code-ask-user/tar.gz/refs/heads/main"
   },
   "bundledDependencies": [
     "pi-claude-code-ask-user"
