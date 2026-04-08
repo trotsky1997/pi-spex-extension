@@ -9,6 +9,10 @@ import {
   getHelpText,
   getInitDispatchPrompt,
   getInitSummary,
+  getTeamImplementDispatchPrompt,
+  getTeamHelpText,
+  getTeamPlanDispatchPrompt,
+  getTeamWrapupDispatchPrompt,
   getTraitsDispatchPrompt,
   getTraitsSummary,
   getTraitsUpdateSummary,
@@ -31,6 +35,8 @@ const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", ".."
 const PROMPTS_DIR = join(PACKAGE_ROOT, "prompts");
 const CONTEXT_MESSAGE_TYPE = "pi-spex-context";
 const ASK_USER_QUESTION_TOOL_NAME = "AskUserQuestion";
+const CLAUDE_SUBAGENT_TEAM_TOOL_NAMES = ["TeamCreate", "Agent", "SendMessage", "TeamDelete"] as const;
+const CLAUDE_TODO_TOOL_NAMES = ["TaskCreate", "TaskGet", "TaskList", "TaskUpdate", "TaskStop"] as const;
 
 type SpexInitProjectParams = {
   refresh?: boolean;
@@ -119,6 +125,16 @@ function buildNextConfig(
 
 function hasAskUserQuestionTool(pi: ExtensionAPI): boolean {
   return pi.getAllTools().some((tool: { name: string }) => tool.name === ASK_USER_QUESTION_TOOL_NAME);
+}
+
+function getMissingClaudeSubagentTeamTools(pi: ExtensionAPI): string[] {
+  const available = new Set(pi.getAllTools().map((tool: { name: string }) => tool.name));
+  return CLAUDE_SUBAGENT_TEAM_TOOL_NAMES.filter((name) => !available.has(name));
+}
+
+function getMissingClaudeTodoTools(pi: ExtensionAPI): string[] {
+  const available = new Set(pi.getAllTools().map((tool: { name: string }) => tool.name));
+  return CLAUDE_TODO_TOOL_NAMES.filter((name) => !available.has(name));
 }
 
 function normalizeTraits(input: string[] | undefined): (typeof SUPPORTED_TRAITS)[number][] {
@@ -348,6 +364,36 @@ async function handleWorktree(pi: ExtensionAPI, args: string, ctx: ExtensionComm
   await openMarkdown(ctx, "spex-worktree help", getWorktreeHelpText());
 }
 
+async function handleTeam(pi: ExtensionAPI, args: string, ctx: ExtensionCommandContext): Promise<void> {
+  const trimmed = args.trim();
+  if (!trimmed) {
+    await openMarkdown(ctx, "spex-team help", getTeamHelpText());
+    return;
+  }
+
+  const [actionRaw, ...rest] = trimmed.split(/\s+/);
+  const action = actionRaw?.trim().toLowerCase();
+  const remainder = rest.join(" ").trim();
+
+  let dispatchPrompt: string | undefined;
+  if (action === "plan") dispatchPrompt = getTeamPlanDispatchPrompt(remainder);
+  if (action === "implement") dispatchPrompt = getTeamImplementDispatchPrompt(remainder);
+  if (action === "wrapup") dispatchPrompt = getTeamWrapupDispatchPrompt(remainder);
+
+  if (action === "help") {
+    await openMarkdown(ctx, "spex-team help", getTeamHelpText());
+    return;
+  }
+
+  if (!dispatchPrompt) {
+    ctx.ui.notify("Usage: /spex-team [plan|implement|wrapup] [focus]", "warning");
+    return;
+  }
+
+  pi.sendUserMessage(dispatchPrompt);
+  ctx.ui.notify(`Queued /spex-team ${action} workflow.`, "info");
+}
+
 export default function spex(pi: ExtensionAPI): void {
   pi.on("resources_discover", async () => ({
     promptPaths: [PROMPTS_DIR],
@@ -363,7 +409,7 @@ export default function spex(pi: ExtensionAPI): void {
     promptGuidelines: [
       "Use this after AskUserQuestion collects the spex trait and permission choices.",
       "Map permission labels to one of: standard, yolo, none.",
-      "Pass only supported traits: superpowers, deep-review, worktrees.",
+      "Pass only supported traits: superpowers, deep-review, teams, worktrees.",
     ],
     parameters: Type.Object({
       refresh: Type.Optional(Type.Boolean({ description: "Force a refresh bootstrap of the current project." })),
@@ -408,7 +454,7 @@ export default function spex(pi: ExtensionAPI): void {
     promptSnippet: "Update pi-spex trait state after AskUserQuestion collects the requested changes.",
     promptGuidelines: [
       "Use this after AskUserQuestion collects trait enable/disable and permission choices.",
-      "Pass only supported traits: superpowers, deep-review, worktrees.",
+      "Pass only supported traits: superpowers, deep-review, teams, worktrees.",
       "If the user wants no permission change, omit permissions.",
       "If a trait appears in both enable and disable, the tool will keep it enabled and ignore the duplicate disable request.",
     ],
@@ -467,6 +513,11 @@ export default function spex(pi: ExtensionAPI): void {
   pi.registerCommand("spex-worktree", {
     description: "List, add, or prune git worktrees for spex-style feature isolation",
     handler: async (args: string, ctx: ExtensionCommandContext) => handleWorktree(pi, args, ctx),
+  });
+
+  pi.registerCommand("spex-team", {
+    description: "Run team-oriented Spex helpers for plan, implement, or wrapup flows",
+    handler: async (args: string, ctx: ExtensionCommandContext) => handleTeam(pi, args, ctx),
   });
 
   pi.registerCommand("spex-ship", {
@@ -532,6 +583,32 @@ export default function spex(pi: ExtensionAPI): void {
       ctx.ui.setStatus("pi-spex", `spex:${formatEnabledTraits(config)}`);
     } else {
       ctx.ui.setStatus("pi-spex", "spex:ready");
+    }
+
+    if (config.traits.teams) {
+      const missingTeamTools = getMissingClaudeSubagentTeamTools(pi);
+      if (missingTeamTools.length > 0) {
+        ctx.ui.notify(
+          [
+            "The `teams` trait is enabled, but the pi-claude-subagent team tools are not loaded.",
+            `Missing tools: ${missingTeamTools.join(", ")}`,
+            "Load the companion extension from `/home/aka/pi-playground/pi-claude-subagent/extensions/claude-subagent/index.ts` or install `pi-claude-subagent`, then /reload.",
+          ].join(" "),
+          "warning",
+        );
+      } else {
+        const missingTodoTools = getMissingClaudeTodoTools(pi);
+        if (missingTodoTools.length > 0) {
+          ctx.ui.notify(
+            [
+              "The `teams` trait can also use Claude Todo V2 shared task tools for teammate orchestration.",
+              `Missing optional tools: ${missingTodoTools.join(", ")}`,
+              "Load `pi-claude-todo-v2` if you want `/spex-team implement` to create and assign shared workstreams directly.",
+            ].join(" "),
+            "info",
+          );
+        }
+      }
     }
   });
 }

@@ -201,6 +201,7 @@ async function main(): Promise<void> {
     assert(toolNames.includes("AskUserQuestion"), `expected AskUserQuestion tool, got: ${toolNames.join(", ")}`);
     assert(toolNames.includes("spex_init_project"), `expected spex_init_project tool, got: ${toolNames.join(", ")}`);
     assert(getCommand(sessionResult, "spex-init"), "expected spex-init command to be registered");
+    assert(getCommand(sessionResult, "spex-team"), "expected spex-team command to be registered");
     assert(getCommand(sessionResult, "spex-ship"), "expected spex-ship command to be registered");
 
     const initArgs = "--traits superpowers,deep-review --permissions standard";

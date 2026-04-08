@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
-export const SUPPORTED_TRAITS = ["superpowers", "deep-review", "worktrees"] as const;
+export const SUPPORTED_TRAITS = ["superpowers", "deep-review", "teams", "worktrees"] as const;
 export type TraitName = (typeof SUPPORTED_TRAITS)[number];
 
 export const SUPPORTED_PERMISSION_LEVELS = ["none", "standard", "yolo"] as const;
@@ -35,6 +35,7 @@ export function createDefaultConfig(): SpexConfig {
     traits: {
       "superpowers": false,
       "deep-review": false,
+      "teams": false,
       "worktrees": false,
     },
     permissions: "standard",
@@ -58,6 +59,7 @@ function normalizeConfig(input: unknown): SpexConfig {
     traits: {
       "superpowers": Boolean(source.traits?.["superpowers"]),
       "deep-review": Boolean(source.traits?.["deep-review"]),
+      "teams": Boolean(source.traits?.["teams"]),
       "worktrees": Boolean(source.traits?.["worktrees"]),
     },
     permissions: SUPPORTED_PERMISSION_LEVELS.includes(source.permissions as PermissionLevel)

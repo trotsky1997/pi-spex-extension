@@ -31,6 +31,7 @@ It is designed to help users move from vague intent to explicit specification, p
 - `/spex-traits`
 - `/spex-help`
 - `/spex-worktree`
+- `/spex-team`
 - `/spex-ship`
 
 `spex-ship` also supports:
@@ -49,6 +50,12 @@ It is designed to help users move from vague intent to explicit specification, p
 - `/spex-review-code`
 - `/spex-evolve`
 - `/spex-stamp`
+
+`/spex-team` supports:
+
+- `plan`
+- `implement`
+- `wrapup`
 
 ### Interactive consultant skill
 
@@ -90,6 +97,21 @@ Quick-load without installing:
 pi -e /home/aka/pi-playground/pi-spex-extension/extensions/spex/index.ts
 ```
 
+To use the teammate-oriented workflow helpers, also load the companion `pi-claude-subagent` extension:
+
+```bash
+pi -e /home/aka/pi-playground/pi-spex-extension/extensions/spex/index.ts \
+   -e /home/aka/pi-playground/pi-claude-subagent/extensions/claude-subagent/index.ts
+```
+
+If you also want shared teammate task orchestration, load `pi-claude-todo-v2` too:
+
+```bash
+pi -e /home/aka/pi-playground/pi-spex-extension/extensions/spex/index.ts \
+   -e /home/aka/pi-playground/pi-claude-subagent/extensions/claude-subagent/index.ts \
+   -e /home/aka/pi-playground/pi-claude-todo-v2/extensions/claude-todo-v2/index.ts
+```
+
 For local path usage, run `npm install` once inside the package so the bundled `pi-claude-code-ask-user` dependency is available under `node_modules/`.
 
 ## Prerequisite
@@ -109,7 +131,9 @@ uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 3. Optionally enable traits with `/spex-traits enable superpowers`
 4. Use `/speckit.constitution`, `/speckit.specify`, `/speckit.plan`, `/speckit.tasks`, `/speckit.implement`
 5. Use `/spex-review-spec`, `/spex-review-plan`, `/spex-review-code`, `/spex-evolve`, and `/spex-stamp` around the core flow
-6. Use `/spex-ship` for the stateful end-to-end pipeline when `superpowers` and `deep-review` are enabled
+6. If the `teams` trait is enabled and `pi-claude-subagent` is loaded, use `/spex-team plan` or `/spex-team implement` to kick off teammate-based planning research or implementation
+7. Use `/spex-team wrapup` to collect teammate/task-list state and hand off into review, verification, or cleanup
+8. Use `/spex-ship` for the stateful end-to-end pipeline when `superpowers` and `deep-review` are enabled
 
 ## Traits
 
@@ -117,6 +141,7 @@ Supported v1 traits:
 
 - `superpowers`
 - `deep-review`
+- `teams`
 - `worktrees`
 
 Trait state is stored in:
@@ -162,7 +187,8 @@ Examples:
 
 ## Notes
 
-- `teams` is intentionally deferred in this version.
+- The `teams` trait is a companion workflow for `pi-claude-subagent`. It does not bundle team tools itself; it guides the agent to use `TeamCreate`, `Agent`, `SendMessage`, and `TeamDelete` when that package is loaded.
+- If `pi-claude-todo-v2` is also loaded, `/spex-team implement` can create and assign shared workstreams through `TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate`, and `TaskStop`, and `/spex-team wrapup` can use the same task list for completion and review handoff.
 - `/spex-ship` is an extension-backed stateful pipeline command. It persists `.specify/.spex-ship-phase.json` and manages lifecycle through `spex_ship_state`.
 - `spex_ship_state advance` performs stage-aware artifact validation before allowing the pipeline to move forward.
 - `/spex-ship --resume` distinguishes running, paused, failed, and completed pipelines, emits recovery instructions, and restores paused pipelines to `running` before resuming the current stage.

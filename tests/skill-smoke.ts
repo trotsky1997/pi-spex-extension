@@ -5,6 +5,8 @@ import { dirname, join, resolve } from "node:path";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 import { DefaultResourceLoader } from "@mariozechner/pi-coding-agent";
+import { createDefaultConfig } from "../extensions/spex/state.js";
+import { getHelpText, getTeamHelpText, getTeamImplementDispatchPrompt, getTeamPlanDispatchPrompt, getTeamWrapupDispatchPrompt } from "../extensions/spex/prompts.js";
 
 const execFile = promisify(execFileCb);
 const ROOT_DIR = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -28,7 +30,18 @@ async function main(): Promise<void> {
     const skills = loader.getSkills();
     const names = skills.skills.map((skill) => skill.name);
     assert(names.includes("spec-driven-development-consultant"), `expected consultant skill, got: ${names.join(", ")}`);
-    console.log("skill smoke ok");
+    const helpText = getHelpText(createDefaultConfig());
+    assert(helpText.includes("/spex-team plan"), "expected help text to mention /spex-team plan");
+    assert(helpText.includes("/spex-team implement"), "expected help text to mention /spex-team implement");
+    assert(helpText.includes("/spex-team wrapup"), "expected help text to mention /spex-team wrapup");
+    const teamHelpText = getTeamHelpText();
+    assert(teamHelpText.includes("/spex-team plan"), "expected team help text to mention /spex-team plan");
+    assert(teamHelpText.includes("/spex-team implement"), "expected team help text to mention /spex-team implement");
+    assert(teamHelpText.includes("/spex-team wrapup"), "expected team help text to mention /spex-team wrapup");
+    assert(getTeamPlanDispatchPrompt("").includes("pi-claude-subagent"), "expected team plan dispatch prompt to mention pi-claude-subagent");
+    assert(getTeamImplementDispatchPrompt("").includes("TaskCreate"), "expected team implement dispatch prompt to mention TaskCreate");
+    assert(getTeamWrapupDispatchPrompt("").includes("SendMessage"), "expected team wrapup dispatch prompt to mention SendMessage");
+    console.log("skill and prompt smoke ok");
   } finally {
     await rm(tmp, { recursive: true, force: true });
   }

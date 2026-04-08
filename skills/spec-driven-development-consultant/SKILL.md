@@ -99,6 +99,7 @@ If `spec.md` exists but `plan.md` does not:
 
 - explain that the next step is technical planning
 - recommend `/speckit.plan`
+- if the `teams` trait is enabled and the codebase research looks broad enough to parallelize, mention `/spex-team plan` as the kickoff option before or alongside `/speckit.plan`
 - if the spec still looks risky or ambiguous, recommend `/spex-review-spec` or `/speckit.clarify` first
 
 ### 4. Plan Exists, Tasks Missing
@@ -113,6 +114,7 @@ If `plan.md` exists but `tasks.md` does not:
 If `tasks.md` exists and implementation artifacts are absent or incomplete:
 
 - recommend `/speckit.implement`
+- if the `teams` trait is enabled and the task graph appears parallelizable, mention `/spex-team implement` as the teammate kickoff option
 - if the user wants the full orchestrated flow and the required traits are enabled, explain when `/spex-ship` makes sense
 
 ### 6. Implementation / Review / Drift
@@ -122,6 +124,7 @@ If implementation artifacts or review artifacts exist:
 - use `/spex-review-code` for code/spec compliance review
 - use `/spex-evolve` when spec/code drift needs reconciliation
 - use `/spex-stamp` for final readiness checks
+- if teammate-based execution is in progress or just finished, mention `/spex-team wrapup` before final review or cleanup
 - use `/spex-ship --resume` if there is an active `.specify/.spex-ship-phase.json`
 
 ## How to Recommend Next Steps
@@ -177,6 +180,9 @@ The commands you should steer users toward are:
 - `/spex-review-code`
 - `/spex-evolve`
 - `/spex-stamp`
+- `/spex-team plan`
+- `/spex-team implement`
+- `/spex-team wrapup`
 
 ### Spec Kit commands (generated after bootstrap)
 

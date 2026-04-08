@@ -13,6 +13,9 @@ function buildTraitBullets(config: SpexConfig): string[] {
   if (config.traits["deep-review"]) {
     lines.push("- `deep-review`: for code review, evaluate spec compliance first, then inspect correctness, architecture, security, production readiness, and test quality. Present findings first.");
   }
+  if (config.traits["teams"]) {
+    lines.push("- `teams`: when a spec or task graph naturally splits into multiple independent workstreams, prefer teammate-based orchestration with `TeamCreate`, named `Agent(team_name + name)` calls, `SendMessage`, and shared task-list tools when available. Keep the lead focused on synthesis, review, and spec alignment. If the companion team tools are unavailable, say so clearly and fall back to the single-session flow.");
+  }
   if (config.traits["worktrees"]) {
     lines.push("- `worktrees`: prefer isolated feature worktrees for larger feature branches or risky implementation work. Keep the main checkout clean when possible.");
   }
