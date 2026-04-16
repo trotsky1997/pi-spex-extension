@@ -100,7 +100,13 @@ Install Spec Kit's `specify` CLI first:
 uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 ```
 
-`/spex-init` reuses the existing `AskUserQuestion` tool from `pi-claude-code-ask-user` for interactive trait and permission selection.
+`/spex-init` and `/spex-traits interactive` reuse an existing `AskUserQuestion` tool when one is already installed. Otherwise, `pi-spex-extension` activates its bundled fallback at runtime, so it does not collide with separate `pi-claude-code-ask-user` installs.
+
+If you are working from a raw local checkout without running `npm install`, you can still bootstrap non-interactively with:
+
+```bash
+/spex-init --traits superpowers,deep-review --permissions standard
+```
 
 ## Typical flow
 
